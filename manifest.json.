@@ -1,0 +1,11 @@
+{
+"name": "Электронный дневник студента VATK",
+"short_name": "VATK",
+"description": "Электронный дневник студента",
+"start_url": "./",
+"scope": "./",
+"display": "standalone",
+"background_color": "#f1f5f9",
+"theme_color": "#172554",
+"lang": "ru"
+}
