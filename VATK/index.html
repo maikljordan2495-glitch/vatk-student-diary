@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Электронный дневник студента</title>
+
+<style>
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f1f5f9;
+    color:#172033
+}
+
+button,input,select{
+    font:inherit
+}
+
+.app{
+    display:flex;
+    min-height:100vh
+}
+
+.sidebar{
+    width:245px;
+    background:linear-gradient(180deg,#172554,#2563eb);
+    color:#fff;
+    padding:24px 16px;
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    overflow-y:auto
+}
+
+.logo{
+    font-size:21px;
+    font-weight:700;
+    margin:5px 10px 30px
+}
+
+.nav button{
+    width:100%;
+    padding:13px 14px;
+    margin:4px 0;
+    border:0;
+    border-radius:10px;
+    background:transparent;
+    color:#fff;
+    text-align:left;
+    font-size:15px;
+    cursor:pointer;
+    transition:.2s
+}
+
+.nav button:hover,
+.nav button.active{
+    background:#ffffff22
+}
+
+.main{
+    margin-left:245px;
+    width:calc(100% - 245px);
+    padding:28px
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:22px;
+    flex-wrap:wrap
+}
+
+h1{
+    margin:0;
+    font-size:28px
+}
+
+.top-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap
+}
+
+.lang{
+    padding:10px 12px;
+    border:1px solid #cbd5e1;
+    background:#fff;
+    border-radius:10px
+}
+
+.student{
+    background:#fff;
+    padding:10px 15px;
+    border-radius:12px;
+    box-shadow:0 5px 18px #17203312
+}
+
+.page{
+    display:none
+}
+
+.page.active{
+    display:block
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:20px
+}
+
+.card,
+.panel{
+    background:#fff;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 5px 18px #17203312
+}
+
+.card .num{
+    font-size:29px;
+    font-weight:700;
+    margin-top:8px
+}
+
+.muted{
+    color:#64748b;
+    font-size:13px
+}
+
+.grid2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px
+}
+
+.section-title{
+    margin-top:0
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border-radius:14px;
+    overflow:hidden
+}
+
+th,td{
+    padding:13px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left
+}
+
+th{
+    background:#eff6ff
+}
+
+.grade{
+    font-weight:700;
+    padding:5px 9px;
+    border-radius:8px;
+    background:#dcfce7;
+    color:#166534
+}
+
+.form{
+    display:grid;
+    grid-template-columns:1.4fr 1fr 120px auto;
+    gap:10px;
+    margin-bottom:18px
+}
+
+input,select{
+    width:100%;
+    padding:11px;
+    border:1px solid #cbd5e1;
+    border-radius:9px;
+    font-size:14px;
+    background:#fff;
+    color:#172033
+}
+
+button.primary{
+    background:#2563eb;
+    color:#fff;
+    border:0;
+    border-radius:9px;
+    padding:11px 16px;
+    cursor:pointer
+}
+
+button.primary:hover{
+    background:#1d4ed8
+}
+
+button.delete{
+    background:#fee2e2;
+    color:#b91c1c;
+    border:0;
+    border-radius:7px;
+    padding:7px 10px;
+    cursor:pointer
+}
+
+button.delete:hover{
+    background:#fecaca
+}
+
+.progress{
+    height:9px;
+    background:#e2e8f0;
+    border-radius:10px;
+    overflow:hidden
+}
+
+.progress i{
+    display:block;
+    height:100%;
+    background:#2563eb
+}
+
+.task{
+    padding:13px;
+    border:1px solid #e2e8f0;
+    border-radius:10px;
+    margin:9px 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px
+}
+
+.task.done{
+    text-decoration:line-through;
+    opacity:.55
+}
+
+.task-main{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    flex:1
+}
+
+.task-main input{
+    width:auto
+}
+
+.profile{
+    display:grid;
+    grid-template-columns:180px 1fr;
+    gap:25px
+}
+
+.avatar{
+    height:180px;
+    border-radius:50%;
+    background:#dbeafe;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:70px
+}
+
+.badge{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:8px;
+    background:#dbeafe;
+    color:#1d4ed8
+}
+
+.notice{
+    padding:14px;
+    border-left:4px solid #2563eb;
+    background:#eff6ff;
+    border-radius:8px;
+    margin-bottom:10px
+}
+
+footer{
+    text-align:center;
+    color:#94a3b8;
+    margin-top:25px;
+    font-size:13px
+}
+
+.empty{
+    text-align:center;
+    color:#94a3b8;
+    padding:20px
+}
+
+@media(max-width:1100px){
+
+    .cards{
+        grid-template-columns:1fr 1fr
+    }
+
+    .form{
+        grid-template-columns:1fr 1fr
+    }
+
+    .form button{
+        grid-column:span 2
+    }
+}
+
+@media(max-width:900px){
+
+    .grid2{
+        grid-template-columns:1fr
+    }
+
+    .sidebar{
+        width:190px
+    }
+
+    .main{
+        margin-left:190px;
+        width:calc(100% - 190px)
+    }
+}
+
+@media(max-width:650px){
+
+    .sidebar{
+        position:static;
+        width:100%;
+        min-height:auto
+    }
+
+    .app{
+        display:block
+    }
+
+    .main{
+        margin-left:0;
+        width:100%;
+        padding:15px
+    }
+
+    .cards{
+        grid-template-columns:1fr 1fr
+    }
+
+    .nav{
+        display:grid;
+        grid-template-columns:1fr 1fr
+    }
+
+    .form{
+        grid-template-columns:1fr
+    }
+
+    .form button{
+        grid-column:auto
+    }
+
+    .profile{
+        grid-template-columns:1fr
+    }
+
+    .avatar{
+        margin:auto
+    }
+
+    .table-wrap{
+        overflow-x:auto
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+    <div class="logo">🎓 VATK</div>
+
+    <div class="nav">
+
+        <button class="active" onclick="showPage('home',this)">
+            🏠 <span data-nav="home">Главная</span>
+        </button>
+
+        <button onclick="showPage('grades',this)">
+            📊 <span data-nav="grades">Оценки</span>
+        </button>
+
+        <button onclick="showPage('schedule',this)">
+            📅 <span data-nav="schedule">Расписание</span>
+        </button>
+
+        <button onclick="showPage('tasks',this)">
+            📝 <span data-nav="tasks">Задания</span>
+        </button>
+
+        <button onclick="showPage('attendance',this)">
+            ✅ <span data-nav="attendance">Посещаемость</span>
+        </button>
+
+        <button onclick="showPage('profile',this)">
+            👤 <span data-nav="profile">Профиль</span>
+        </button>
+
+    </div>
+</aside>
+
+
+<!-- MAIN -->
+<main class="main">
+
+    <div class="top">
+
+        <h1 id="title">Главная</h1>
+
+        <div class="top-right">
+
+            <select id="lang"
+                    class="lang"
+                    onchange="changeLang()">
+
+                <option value="ru">RU</option>
+                <option value="kz">KZ</option>
+                <option value="en">EN</option>
+
+            </select>
+
+            <div class="student">
+                👨‍🎓
+                <span id="studentLabel">Студент</span>:
+                <b>Иванов Иван</b>
+            </div>
+
+        </div>
+
+    </div>
+
+
+<!-- ГЛАВНАЯ -->
+<section id="home" class="page active">
+
+    <div class="cards">
+
+        <div class="card">
+
+            <div class="muted" id="averageText">
+                Средний балл
+            </div>
+
+            <div class="num" id="avg">
+                0.0
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="muted" id="subjectsText">
+                Предметов
+            </div>
+
+            <div class="num" id="subjectsCount">
+                6
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="muted" id="attendanceText">
+                Посещаемость
+            </div>
+
+            <div class="num">
+                92%
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="muted" id="tasksText">
+                Заданий
+            </div>
+
+            <div class="num" id="taskCount">
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="grid2">
+
+        <div>
+
+            <h2 class="section-title"
+                id="notificationsTitle">
+                📢 Уведомления
+            </h2>
+
+            <div class="notice" id="notice1">
+                Сегодня в 14:00 — занятие по программированию.
+            </div>
+
+            <div class="notice" id="notice2">
+                Не забудьте сдать лабораторную работу до пятницы.
+            </div>
+
+            <div class="notice" id="notice3">
+                Ваш средний балл рассчитан автоматически по журналу.
+            </div>
+
+        </div>
+
+
+        <div>
+
+            <h2 class="section-title"
+                id="performanceTitle">
+                📚 Успеваемость
+            </h2>
+
+            <p>
+                Программирование <b>4.7</b>
+            </p>
+
+            <div class="progress">
+                <i style="width:94%"></i>
+            </div>
+
+
+            <p>
+                Математика <b>4.2</b>
+            </p>
+
+            <div class="progress">
+                <i style="width:84%"></i>
+            </div>
+
+
+            <p>
+                История <b>4.0</b>
+            </p>
+
+            <div class="progress">
+                <i style="width:80%"></i>
+            </div>
+
+
+            <p>
+                Английский язык <b>4.3</b>
+            </p>
+
+            <div class="progress">
+                <i style="width:86%"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ОЦЕНКИ -->
+<section id="grades" class="page">
+
+    <div class="panel">
+
+        <h2 id="gradesTitle">
+            📊 Электронный журнал оценок
+        </h2>
+
+
+        <div class="form">
+
+            <input
+                id="subject"
+                placeholder="Предмет">
+
+            <input
+                type="date"
+                id="date">
+
+            <select id="mark">
+
+                <option value="5">5</option>
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2">2</option>
+
+            </select>
+
+            <button
+                id="addGradeBtn"
+                class="primary"
+                onclick="addGrade()">
+
+                Добавить
+
+            </button>
+
+        </div>
+
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th id="subjectHead">
+                            Предмет
+                        </th>
+
+                        <th id="dateHead">
+                            Дата
+                        </th>
+
+                        <th id="gradeHead">
+                            Оценка
+                        </th>
+
+                        <th>
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="gradeBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- РАСПИСАНИЕ -->
+<section id="schedule" class="page">
+
+    <div class="panel">
+
+        <h2 id="scheduleTitle">
+            📅 Расписание
+        </h2>
+
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th id="dayHead">
+                            День
+                        </th>
+
+                        <th id="timeHead">
+                            Время
+                        </th>
+
+                        <th id="subjectScheduleHead">
+                            Предмет
+                        </th>
+
+                        <th id="roomHead">
+                            Кабинет
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr>
+                        <td data-t="monday">Понедельник</td>
+                        <td>09:00</td>
+                        <td data-t="math">Математика</td>
+                        <td>205</td>
+                    </tr>
+
+                    <tr>
+                        <td data-t="monday">Понедельник</td>
+                        <td>10:45</td>
+                        <td data-t="programming">Программирование</td>
+                        <td>312</td>
+                    </tr>
+
+                    <tr>
+                        <td data-t="tuesday">Вторник</td>
+                        <td>09:00</td>
+                        <td data-t="english">Английский язык</td>
+                        <td>108</td>
+                    </tr>
+
+                    <tr>
+                        <td data-t="wednesday">Среда</td>
+                        <td>12:30</td>
+                        <td data-t="history">История</td>
+                        <td>214</td>
+                    </tr>
+
+                    <tr>
+                        <td data-t="thursday">Четверг</td>
+                        <td>10:45</td>
+                        <td data-t="databases">Базы данных</td>
+                        <td>305</td>
+                    </tr>
+
+                    <tr>
+                        <td data-t="friday">Пятница</td>
+                        <td>09:00</td>
+                        <td data-t="pe">Физическая культура</td>
+                        <td data-t="gym">Спортзал</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ЗАДАНИЯ -->
+<section id="tasks" class="page">
+
+    <div class="panel">
+
+        <h2 id="tasksTitle">
+            📝 Домашние задания
+        </h2>
+
+
+        <div class="form">
+
+            <input
+                id="taskInput"
+                placeholder="Введите задание">
+
+
+            <select id="taskSubject">
+
+                <option
+                    value="Программирование"
+                    data-task-subject="programming">
+
+                    Программирование
+
+                </option>
+
+                <option
+                    value="Математика"
+                    data-task-subject="math">
+
+                    Математика
+
+                </option>
+
+                <option
+                    value="История"
+                    data-task-subject="history">
+
+                    История
+
+                </option>
+
+                <option
+                    value="Английский язык"
+                    data-task-subject="english">
+
+                    Английский язык
+
+                </option>
+
+            </select>
+
+
+            <button
+                id="addTaskBtn"
+                class="primary"
+                onclick="addTask()">
+
+                Добавить
+
+            </button>
+
+        </div>
+
+
+        <div id="tasksList">
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ПОСЕЩАЕМОСТЬ -->
+<section id="attendance" class="page">
+
+    <div class="panel">
+
+        <h2 id="attendanceTitle">
+            ✅ Посещаемость
+        </h2>
+
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th id="attendanceSubjectHead">
+                            Предмет
+                        </th>
+
+                        <th id="totalHead">
+                            Всего занятий
+                        </th>
+
+                        <th id="missedHead">
+                            Пропущено
+                        </th>
+
+                        <th id="attendancePercentHead">
+                            Посещаемость
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr>
+                        <td data-t="programming">Программирование</td>
+                        <td>24</td>
+                        <td>1</td>
+                        <td>96%</td>
+                    </tr>
+
+                    <tr>
+                        <td data-t="math">Математика</td>
+                        <td>22</td>
+                        <td>3</td>
+                        <td>86%</td>
+                    </tr>
+
+                    <tr>
+                        <td data-t="history">История</td>
+                        <td>20</td>
+                        <td>1</td>
+                        <td>95%</td>
+                    </tr>
+
+                    <tr>
+                        <td data-t="english">Английский язык</td>
+                        <td>21</td>
+                        <td>2</td>
+                        <td>90%</td>
+                    </tr>
+
+                    <tr>
+                        <td data-t="databases">Базы данных</td>
+                        <td>18</td>
+                        <td>0</td>
+                        <td>100%</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ПРОФИЛЬ -->
+<section id="profile" class="page">
+
+    <div class="panel profile">
+
+        <div class="avatar">
+            👨‍🎓
+        </div>
+
+
+        <div>
+
+            <h2>
+                Иванов Иван
+            </h2>
+
+            <p>
+                <span
+                    class="badge"
+                    id="studentBadge">
+
+                    Студент
+
+                </span>
+            </p>
+
+
+            <p>
+                <b id="groupLabel">
+                    Группа:
+                </b>
+                41 ПО
+            </p>
+
+
+            <p>
+                <b id="specialtyLabel">
+                    Специальность:
+                </b>
+                программное обеспечение
+            </p>
+
+
+            <p>
+                <b id="courseLabel">
+                    Курс:
+                </b>
+                4
+            </p>
+
+
+            <p>
+                <b id="yearLabel">
+                    Учебный год:
+                </b>
+                2026–2027
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer id="footerText">
+    Электронный дневник студента •
+    Учебный проект подготовила:
+    Яшкина Татьяна Денисовна
+</footer>
+
+</main>
+</div>
+
+
+<script>
+
+const translations = {
+
+    ru: {
+
+        home:'Главная',
+        grades:'Оценки',
+        schedule:'Расписание',
+        tasks:'Задания',
+        attendance:'Посещаемость',
+        profile:'Профиль',
+
+        student:'Студент',
+
+        average:'Средний балл',
+        subjects:'Предметов',
+        attendanceCard:'Посещаемость',
+        tasksCard:'Заданий',
+
+        notifications:'📢 Уведомления',
+        performance:'📚 Успеваемость',
+
+        notice1:'Сегодня в 14:00 — занятие по программированию.',
+        notice2:'Не забудьте сдать лабораторную работу до пятницы.',
+        notice3:'Ваш средний балл рассчитан автоматически по журналу.',
+
+        gradeJournal:'📊 Электронный журнал оценок',
+
+        subject:'Предмет',
+        date:'Дата',
+        grade:'Оценка',
+
+        add:'Добавить',
+        delete:'Удалить',
+
+        scheduleTitle:'📅 Расписание',
+
+        day:'День',
+        time:'Время',
+        classroom:'Кабинет',
+
+        tasksTitle:'📝 Домашние задания',
+        taskPlaceholder:'Введите задание',
+
+        attendanceTitle:'✅ Посещаемость',
+
+        total:'Всего занятий',
+        missed:'Пропущено',
+        attendancePercent:'Посещаемость',
+
+        profileTitle:'Профиль',
+
+        studentBadge:'Студент',
+
+        group:'Группа:',
+        specialty:'Специальность:',
+        course:'Курс:',
+        year:'Учебный год:',
+
+        footer:'Электронный дневник студента • Учебный проект подготовила: Яшкина Татьяна Денисовна',
+
+        fillSubjectDate:'Заполните предмет и дату',
+        enterTask:'Введите задание',
+
+        monday:'Понедельник',
+        tuesday:'Вторник',
+        wednesday:'Среда',
+        thursday:'Четверг',
+        friday:'Пятница',
+
+        programming:'Программирование',
+        math:'Математика',
+        history:'История',
+        english:'Английский язык',
+        databases:'Базы данных',
+        pe:'Физическая культура',
+        gym:'Спортзал'
+    },
+
+
+    kz: {
+
+        home:'Басты бет',
+        grades:'Бағалар',
+        schedule:'Сабақ кестесі',
+        tasks:'Тапсырмалар',
+        attendance:'Қатысу',
+        profile:'Профиль',
+
+        student:'Студент',
+
+        average:'Орташа балл',
+        subjects:'Пәндер',
+        attendanceCard:'Қатысу',
+        tasksCard:'Тапсырмалар',
+
+        notifications:'📢 Хабарламалар',
+        performance:'📚 Үлгерім',
+
+        notice1:'Бүгін сағат 14:00 — бағдарламалау сабағы.',
+        notice2:'Зертханалық жұмысты жұмаға дейін тапсыруды ұмытпаңыз.',
+        notice3:'Орташа балл журнал бойынша автоматты түрде есептеледі.',
+
+        gradeJournal:'📊 Бағалар журналы',
+
+        subject:'Пән',
+        date:'Күні',
+        grade:'Баға',
+
+        add:'Қосу',
+        delete:'Жою',
+
+        scheduleTitle:'📅 Сабақ кестесі',
+
+        day:'Күн',
+        time:'Уақыт',
+        classroom:'Кабинет',
+
+        tasksTitle:'📝 Үй тапсырмалары',
+        taskPlaceholder:'Тапсырманы енгізіңіз',
+
+        attendanceTitle:'✅ Қатысу',
+
+        total:'Сабақ саны',
+        missed:'Қалдырылды',
+        attendancePercent:'Қатысу',
+
+        profileTitle:'Профиль',
+
+        studentBadge:'Студент',
+
+        group:'Топ:',
+        specialty:'Мамандық:',
+        course:'Курс:',
+        year:'Оқу жылы:',
+
+        footer:'Студенттің электрондық күнделігі • Оқу жобасын дайындаған: Яшкина Татьяна Денисовна',
+
+        fillSubjectDate:'Пән мен күнін толтырыңыз',
+        enterTask:'Тапсырманы енгізіңіз',
+
+        monday:'Дүйсенбі',
+        tuesday:'Сейсенбі',
+        wednesday:'Сәрсенбі',
+        thursday:'Бейсенбі',
+        friday:'Жұма',
+
+        programming:'Бағдарламалау',
+        math:'Математика',
+        history:'Тарих',
+        english:'Ағылшын тілі',
+        databases:'Деректер қоры',
+        pe:'Дене шынықтыру',
+        gym:'Спортзал'
+    },
+
+
+    en: {
+
+        home:'Home',
+        grades:'Grades',
+        schedule:'Schedule',
+        tasks:'Tasks',
+        attendance:'Attendance',
+        profile:'Profile',
+
+        student:'Student',
+
+        average:'Average Grade',
+        subjects:'Subjects',
+        attendanceCard:'Attendance',
+        tasksCard:'Tasks',
+
+        notifications:'📢 Notifications',
+        performance:'📚 Performance',
+
+        notice1:'Today at 14:00 — programming class.',
+        notice2:'Do not forget to submit the laboratory work by Friday.',
+        notice3:'Your average grade is calculated automatically from the journal.',
+
+        gradeJournal:'📊 Grade Journal',
+
+        subject:'Subject',
+        date:'Date',
+        grade:'Grade',
+
+        add:'Add',
+        delete:'Delete',
+
+        scheduleTitle:'📅 Schedule',
+
+        day:'Day',
+        time:'Time',
+        classroom:'Room',
+
+        tasksTitle:'📝 Homework',
+        taskPlaceholder:'Enter a task',
+
+        attendanceTitle:'✅ Attendance',
+
+        total:'Total classes',
+        missed:'Missed',
+        attendancePercent:'Attendance',
+
+        profileTitle:'Profile',
+
+        studentBadge:'Student',
+
+        group:'Group:',
+        specialty:'Specialty:',
+        course:'Course:',
+        year:'Academic year:',
+
+        footer:'Student electronic diary • Educational project prepared by: Yashkina Tatyana Denisovna',
+
+        fillSubjectDate:'Please fill in subject and date',
+        enterTask:'Enter a task',
+
+        monday:'Monday',
+        tuesday:'Tuesday',
+        wednesday:'Wednesday',
+        thursday:'Thursday',
+        friday:'Friday',
+
+        programming:'Programming',
+        math:'Mathematics',
+        history:'History',
+        english:'English',
+        databases:'Databases',
+        pe:'Physical Education',
+        gym:'Gym'
+    }
+
+};
+
+
+const titles = {
+
+    home:'home',
+    grades:'grades',
+    schedule:'schedule',
+    tasks:'tasks',
+    attendance:'attendance',
+    profile:'profile'
+
+};
+
+
+let currentLang =
+    localStorage.getItem('lang') || 'ru';
+
+
+const savedGrades =
+    JSON.parse(
+        localStorage.getItem('grades') || 'null'
+    );
+
+
+const savedTasks =
+    JSON.parse(
+        localStorage.getItem('tasks') || 'null'
+    );
+
+
+let grades =
+    Array.isArray(savedGrades)
+        ? savedGrades
+        : [
+
+            {
+                s:'Программирование',
+                d:'2026-10-05',
+                m:'5'
+            },
+
+            {
+                s:'Математика',
+                d:'2026-10-06',
+                m:'4'
+            },
+
+            {
+                s:'История',
+                d:'2026-10-07',
+                m:'4'
+            }
+
+        ];
+
+
+let tasks =
+    Array.isArray(savedTasks)
+        ? savedTasks
+        : [
+
+            {
+                t:'Сделать лабораторную работу №3',
+                s:'Программирование',
+                done:false
+            },
+
+            {
+                t:'Решить задачи 1–10',
+                s:'Математика',
+                done:false
+            },
+
+            {
+                t:'Подготовить доклад',
+                s:'История',
+                done:true
+            }
+
+        ];
+
+
+function esc(value){
+
+    return String(value)
+
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+
+}
+
+
+function showPage(id,btn){
+
+    document
+        .querySelectorAll('.page')
+        .forEach(x =>
+            x.classList.remove('active')
+        );
+
+    document
+        .getElementById(id)
+        .classList.add('active');
+
+
+    document
+        .querySelectorAll('.nav button')
+        .forEach(x =>
+            x.classList.remove('active')
+        );
+
+
+    btn.classList.add('active');
+
+    updateTitle(id);
+
+}
+
+
+function updateTitle(id){
+
+    document.getElementById('title').textContent =
+        translations[currentLang][titles[id]];
+
+}
+
+
+function changeLang(){
+
+    currentLang =
+        document.getElementById('lang').value;
+
+
+    localStorage.setItem(
+        'lang',
+        currentLang
+    );
+
+
+    applyLanguage();
+
+}
+
+
+function applyLanguage(){
+
+    const t =
+        translations[currentLang];
+
+
+    document.getElementById('lang').value =
+        currentLang;
+
+
+    document
+        .querySelectorAll('[data-nav]')
+        .forEach(el => {
+
+            const key =
+                el.dataset.nav;
+
+            el.textContent =
+                t[key];
+
+        });
+
+
+    document.getElementById('studentLabel').textContent =
+        t.student;
+
+
+    document.getElementById('averageText').textContent =
+        t.average;
+
+
+    document.getElementById('subjectsText').textContent =
+        t.subjects;
+
+
+    document.getElementById('attendanceText').textContent =
+        t.attendanceCard;
+
+
+    document.getElementById('tasksText').textContent =
+        t.tasksCard;
+
+
+    document.getElementById('notificationsTitle').textContent =
+        t.notifications;
+
+
+    document.getElementById('performanceTitle').textContent =
+        t.performance;
+
+
+    document.getElementById('notice1').textContent =
+        t.notice1;
+
+
+    document.getElementById('notice2').textContent =
+        t.notice2;
+
+
+    document.getElementById('notice3').textContent =
+        t.notice3;
+
+
+    document.getElementById('gradesTitle').textContent =
+        t.gradeJournal;
+
+
+    document.getElementById('subject').placeholder =
+        t.subject;
+
+
+    document.getElementById('addGradeBtn').textContent =
+        t.add;
+
+
+    document.getElementById('subjectHead').textContent =
+        t.subject;
+
+
+    document.getElementById('dateHead').textContent =
+        t.date;
+
+
+    document.getElementById('gradeHead').textContent =
+        t.grade;
+
+
+    document.getElementById('scheduleTitle').textContent =
+        t.scheduleTitle;
+
+
+    document.getElementById('dayHead').textContent =
+        t.day;
+
+
+    document.getElementById('timeHead').textContent =
+        t.time;
+
+
+    document.getElementById('subjectScheduleHead').textContent =
+        t.subject;
+
+
+    document.getElementById('roomHead').textContent =
+        t.classroom;
+
+
+    document.getElementById('tasksTitle').textContent =
+        t.tasksTitle;
+
+
+    document.getElementById('taskInput').placeholder =
+        t.taskPlaceholder;
+
+
+    document.getElementById('addTaskBtn').textContent =
+        t.add;
+
+
+    document.getElementById('attendanceTitle').textContent =
+        t.attendanceTitle;
+
+
+    document.getElementById('attendanceSubjectHead').textContent =
+        t.subject;
+
+
+    document.getElementById('totalHead').textContent =
+        t.total;
+
+
+    document.getElementById('missedHead').textContent =
+        t.missed;
+
+
+    document.getElementById('attendancePercentHead').textContent =
+        t.attendancePercent;
+
+
+    document.getElementById('studentBadge').textContent =
+        t.studentBadge;
+
+
+    document.getElementById('groupLabel').textContent =
+        t.group;
+
+
+    document.getElementById('specialtyLabel').textContent =
+        t.specialty;
+
+
+    document.getElementById('courseLabel').textContent =
+        t.course;
+
+
+    document.getElementById('yearLabel').textContent =
+        t.year;
+
+
+    document.getElementById('footerText').textContent =
+        t.footer;
+
+
+    document
+        .querySelectorAll('[data-t]')
+        .forEach(el => {
+
+            const key =
+                el.dataset.t;
+
+            if(t[key]){
+                el.textContent =
+                    t[key];
+            }
+
+        });
+
+
+    document
+        .querySelectorAll('[data-task-subject]')
+        .forEach(option => {
+
+            const key =
+                option.dataset.taskSubject;
+
+            if(t[key]){
+                option.textContent =
+                    t[key];
+            }
+
+        });
+
+
+    renderGrades();
+
+    renderTasks();
+
+
+    updateTitle(
+        document
+            .querySelector('.page.active')
+            .id
+    );
+
+}
+
+
+function renderGrades(){
+
+    const body =
+        document.getElementById('gradeBody');
+
+
+    body.innerHTML='';
+
+
+    if(!grades.length){
+
+        body.innerHTML =
+            '<tr><td colspan="4" class="empty">—</td></tr>';
+
+    }else{
+
+        grades.forEach((g,i) => {
+
+            body.insertAdjacentHTML(
+                'beforeend',
+
+                `
+                <tr>
+
+                    <td>${esc(g.s)}</td>
+
+                    <td>${esc(g.d)}</td>
+
+                    <td>
+                        <span class="grade">
+                            ${esc(g.m)}
+                        </span>
+                    </td>
+
+                    <td>
+                        <button
+                            class="delete"
+                            onclick="delGrade(${i})">
+
+                            ${translations[currentLang].delete}
+
+                        </button>
+                    </td>
+
+                </tr>
+                `
+
+            );
+
+        });
+
+    }
+
+
+    const average =
+        grades.length
+
+            ? grades.reduce(
+                (sum,g) =>
+                    sum + Number(g.m),
+                0
+            ) / grades.length
+
+            : 0;
+
+
+    document.getElementById('avg').textContent =
+        average.toFixed(1);
+
+
+    localStorage.setItem(
+        'grades',
+        JSON.stringify(grades)
+    );
+
+}
+
+
+function addGrade(){
+
+    const s =
+        document.getElementById('subject')
+            .value
+            .trim();
+
+
+    const d =
+        document.getElementById('date')
+            .value;
+
+
+    const m =
+        document.getElementById('mark')
+            .value;
+
+
+    if(!s || !d){
+
+        alert(
+            translations[currentLang]
+                .fillSubjectDate
+        );
+
+        return;
+
+    }
+
+
+    grades.push({
+
+        s:s,
+        d:d,
+        m:m
+
+    });
+
+
+    document.getElementById('subject')
+        .value='';
+
+
+    document.getElementById('date')
+        .value='';
+
+
+    document.getElementById('mark')
+        .value='5';
+
+
+    renderGrades();
+
+}
+
+
+function delGrade(i){
+
+    if(
+        i < 0 ||
+        i >= grades.length
+    ){
+        return;
+    }
+
+
+    grades.splice(i,1);
+
+    renderGrades();
+
+}
+
+
+function getTaskSubjectKey(value){
+
+    const map = {
+
+        'Программирование':'programming',
+        'Математика':'math',
+        'История':'history',
+        'Английский язык':'english',
+
+        'Бағдарламалау':'programming',
+        'Математика':'math',
+        'Тарих':'history',
+        'Ағылшын тілі':'english',
+
+        'Programming':'programming',
+        'Mathematics':'math',
+        'History':'history',
+        'English':'english'
+
+    };
+
+
+    return map[value] || null;
+
+}
+
+
+function renderTasks(){
+
+    const box =
+        document.getElementById('tasksList');
+
+
+    box.innerHTML='';
+
+
+    if(!tasks.length){
+
+        box.innerHTML =
+            '<div class="empty">—</div>';
+
+    }else{
+
+        tasks.forEach((x,i) => {
+
+            const subjectKey =
+                getTaskSubjectKey(x.s);
+
+
+            const subjectText =
+                (
+                    subjectKey &&
+                    translations[currentLang][subjectKey]
+                ) || x.s;
+
+
+            box.insertAdjacentHTML(
+
+                'beforeend',
+
+                `
+                <div class="task ${x.done ? 'done' : ''}">
+
+                    <label class="task-main">
+
+                        <input
+                            type="checkbox"
+                            ${x.done ? 'checked' : ''}
+                            onchange="toggleTask(${i})">
+
+                        <span>
+                            ${esc(x.t)}
+                            <small>
+                                (${esc(subjectText)})
+                            </small>
+                        </span>
+
+                    </label>
+
+
+                    <button
+                        class="delete"
+                        onclick="delTask(${i})">
+
+                        ${translations[currentLang].delete}
+
+                    </button>
+
+                </div>
+                `
+
+            );
+
+        });
+
+    }
+
+
+    document.getElementById('taskCount').textContent =
+        tasks.filter(
+            x => !x.done
+        ).length;
+
+
+    localStorage.setItem(
+        'tasks',
+        JSON.stringify(tasks)
+    );
+
+}
+
+
+function addTask(){
+
+    const t =
+        document.getElementById('taskInput')
+            .value
+            .trim();
+
+
+    const option =
+        document.getElementById('taskSubject')
+            .selectedOptions[0];
+
+
+    const s =
+        option
+            ? option.value
+            : '';
+
+
+    if(!t){
+
+        alert(
+            translations[currentLang]
+                .enterTask
+        );
+
+        return;
+
+    }
+
+
+    tasks.push({
+
+        t:t,
+        s:s,
+        done:false
+
+    });
+
+
+    document.getElementById('taskInput')
+        .value='';
+
+
+    renderTasks();
+
+}
+
+
+function toggleTask(i){
+
+    if(!tasks[i]){
+        return;
+    }
+
+
+    tasks[i].done =
+        !tasks[i].done;
+
+
+    renderTasks();
+
+}
+
+
+function delTask(i){
+
+    if(
+        i < 0 ||
+        i >= tasks.length
+    ){
+        return;
+    }
+
+
+    tasks.splice(i,1);
+
+    renderTasks();
+
+}
+
+
+document.getElementById('lang').value =
+    currentLang;
+
+
+renderGrades();
+
+renderTasks();
+
+applyLanguage();
+
+</script>
+
+</body>
+</html>
