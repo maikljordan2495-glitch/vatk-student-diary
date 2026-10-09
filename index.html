@@ -1949,6 +1949,290 @@ renderTasks();
 applyLanguage();
 
 </script>
+ <style>
+.app { display: none; }
+.app.logged-in { display: flex; }
+
+#authScreen {
+    min-height: 100vh;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg,#172554,#2563eb);
+    font-family: Arial,sans-serif;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px #0003;
+}
+
+.auth-card h1 {
+    margin: 0 0 10px;
+    color: #172554;
+    font-size: 26px;
+}
+
+.auth-card p {
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.auth-card label {
+    display: block;
+    margin: 16px 0 7px;
+    font-weight: bold;
+    color: #172033;
+}
+
+.auth-card input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    margin-bottom: 5px;
+}
+
+.auth-card button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 12px;
+    border: 0;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#loginBtn {
+    background: #2563eb;
+    color: white;
+}
+
+#signupBtn {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+#authMessage {
+    overflow-wrap: anywhere;
+    font-size: 14px;
+}
+
+#logoutBtn {
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: #fee2e2;
+    color: #b91c1c;
+    cursor: pointer;
+}
+
+@media(max-width:650px) {
+    .app.logged-in { display: block; }
+    .auth-card { padding: 24px; }
+}
+</style>
+
+<div id="authScreen">
+    <div class="auth-card">
+        <h1>🎓 VATK</h1>
+        <p>Электронный дневник студента</p>
+        <p>Войдите в аккаунт или создайте новый.</p>
+
+```
+    <form id="authForm">
+        <label for="authEmail">Электронная почта</label>
+        <input
+            id="authEmail"
+            type="email"
+            placeholder="student@example.com"
+            autocomplete="email"
+            required>
+
+        <label for="authPassword">Пароль</label>
+        <input
+            id="authPassword"
+            type="password"
+            placeholder="Не менее 6 символов"
+            minlength="6"
+            autocomplete="current-password"
+            required>
+
+        <button id="loginBtn" type="submit">Войти</button>
+        <button id="signupBtn" type="button">Создать аккаунт</button>
+    </form>
+
+    <p id="authMessage" role="status"></p>
+</div>
+```
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+(() => {
+    const SUPABASE_URL =
+        'https://qkcrotaodzczllijefgc.supabase.co';
+
+    // Замени текст ниже своим Supabase Publishable key.
+    const SUPABASE_KEY = 'sb_publishable_4suZQ29JQC4Qaha-lHm-JQ_ewYMx5p1';
+
+    const authScreen = document.getElementById('authScreen');
+    const app = document.querySelector('.app');
+    const form = document.getElementById('authForm');
+    const emailInput = document.getElementById('authEmail');
+    const passwordInput = document.getElementById('authPassword');
+    const message = document.getElementById('authMessage');
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+
+    if (!window.supabase) {
+        message.textContent =
+            'Не удалось загрузить авторизацию. Проверьте подключение к интернету.';
+        return;
+    }
+
+    if (SUPABASE_KEY === 'ВСТАВЬ_СЮДА_СВОЙ_PUBLISHABLE_KEY') {
+        message.textContent =
+            'Сначала вставьте свой Publishable key в код.';
+        return;
+    }
+
+    const client = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+    function showMessage(text) {
+        message.textContent = text;
+    }
+
+    function updateScreen(session) {
+        if (session && session.user) {
+            authScreen.style.display = 'none';
+            app.classList.add('logged-in');
+
+            let logoutBtn = document.getElementById('logoutBtn');
+
+            if (!logoutBtn) {
+                logoutBtn = document.createElement('button');
+                logoutBtn.id = 'logoutBtn';
+                logoutBtn.type = 'button';
+                logoutBtn.textContent = 'Выйти';
+
+                document.querySelector('.top-right')
+                    .appendChild(logoutBtn);
+
+                logoutBtn.addEventListener('click', async () => {
+                    logoutBtn.disabled = true;
+                    const { error } = await client.auth.signOut();
+                    logoutBtn.disabled = false;
+
+                    if (error) {
+                        alert('Не удалось выйти: ' + error.message);
+                    }
+                });
+            }
+        } else {
+            app.classList.remove('logged-in');
+            authScreen.style.display = 'flex';
+
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) logoutBtn.remove();
+        }
+    }
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        loginBtn.disabled = true;
+        signupBtn.disabled = true;
+        showMessage('Выполняется вход...');
+
+        const { data, error } = await client.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        loginBtn.disabled = false;
+        signupBtn.disabled = false;
+
+        if (error) {
+            showMessage('Не удалось войти. Проверьте почту и пароль. ' +
+                error.message);
+            return;
+        }
+
+        updateScreen(data.session);
+    });
+
+    signupBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password || password.length < 6) {
+            showMessage(
+                'Введите электронную почту и пароль длиной не менее 6 символов.'
+            );
+            return;
+        }
+
+        loginBtn.disabled = true;
+        signupBtn.disabled = true;
+        showMessage('Создаём аккаунт...');
+
+        const { data, error } = await client.auth.signUp({
+            email,
+            password,
+            options: {
+                emailRedirectTo:
+                    'https://maikljordan2495-glitch.github.io/vatk-student-diary/'
+            }
+        });
+
+        loginBtn.disabled = false;
+        signupBtn.disabled = false;
+
+        if (error) {
+            showMessage('Не удалось создать аккаунт: ' + error.message);
+            return;
+        }
+
+        if (data.session) {
+            updateScreen(data.session);
+            return;
+        }
+
+        showMessage(
+            'Аккаунт создан! Проверьте почту и подтвердите регистрацию, ' +
+            'если Supabase запросил подтверждение. Затем войдите.'
+        );
+    });
+
+    client.auth.onAuthStateChange((_event, session) => {
+        updateScreen(session);
+    });
+
+    client.auth.getSession().then(({ data, error }) => {
+        if (error) {
+            showMessage('Не удалось проверить вход: ' + error.message);
+            updateScreen(null);
+            return;
+        }
+
+        updateScreen(data.session);
+    });
+})();
+</script>
 
 </body>
 </html>
