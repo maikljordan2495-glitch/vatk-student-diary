@@ -7,5 +7,17 @@
 "display": "standalone",
 "background_color": "#f1f5f9",
 "theme_color": "#172554",
-"lang": "ru"
+"lang": "ru",
+"icons": [
+{
+"src": "./e1f5c040-05c3-43f2-adc7-a1dc5f14502e.png",
+"sizes": "192x192",
+"type": "image/png"
+},
+{
+"src": "./e1f5c040-05c3-43f2-adc7-a1dc5f14502e.png",
+"sizes": "512x512",
+"type": "image/png"
+}
+]
 }
