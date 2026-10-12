@@ -454,7 +454,7 @@ footer{
             <div class="student">
                 👨‍🎓
                 <span id="studentLabel">Студент</span>:
-                <b>Иванов Иван</b>
+                <b id="headerFullName">Студент</b>
             </div>
 
         </div>
@@ -589,6 +589,37 @@ footer{
 
         </div>
 
+    </div>
+
+    <div class="panel" style="margin-top:20px;">
+        <h2 style="margin-top:0;">Мои данные</h2>
+        <p>Заполни или измени свои личные данные. Они сохраняются в твоём аккаунте.</p>
+        <form id="profileForm" class="profile-form">
+            <label for="editFullName">ФИО</label>
+            <input id="editFullName" type="text" maxlength="120" placeholder="Например: Иванов Иван Иванович" required>
+
+            <label for="editGroup">Группа</label>
+            <input id="editGroup" type="text" maxlength="50" placeholder="Например: 41 ПО" required>
+
+            <label for="editSpecialty">Специальность</label>
+            <input id="editSpecialty" type="text" maxlength="120" placeholder="Например: Программное обеспечение" required>
+
+            <label for="editCourse">Курс</label>
+            <select id="editCourse" required>
+                <option value="">Выберите курс</option>
+                <option value="1">1 курс</option>
+                <option value="2">2 курс</option>
+                <option value="3">3 курс</option>
+                <option value="4">4 курс</option>
+                <option value="5">5 курс</option>
+            </select>
+
+            <label for="editYear">Учебный год</label>
+            <input id="editYear" type="text" maxlength="20" placeholder="Например: 2026–2027" required>
+
+            <button type="submit" id="saveProfileBtn">Сохранить данные</button>
+            <p id="profileMessage" role="status"></p>
+        </form>
     </div>
 
 </section>
@@ -941,9 +972,7 @@ footer{
 
         <div>
 
-            <h2>
-                Иванов Иван
-            </h2>
+            <h2 id="profileFullName">Не указано</h2>
 
             <p>
                 <span
@@ -960,7 +989,7 @@ footer{
                 <b id="groupLabel">
                     Группа:
                 </b>
-                41 ПО
+                <span id="profileGroup">Не указана</span>
             </p>
 
 
@@ -968,7 +997,7 @@ footer{
                 <b id="specialtyLabel">
                     Специальность:
                 </b>
-                программное обеспечение
+                <span id="profileSpecialty">Не указана</span>
             </p>
 
 
@@ -976,7 +1005,7 @@ footer{
                 <b id="courseLabel">
                     Курс:
                 </b>
-                4
+                <span id="profileCourse">Не указан</span>
             </p>
 
 
@@ -984,7 +1013,7 @@ footer{
                 <b id="yearLabel">
                     Учебный год:
                 </b>
-                2026–2027
+                <span id="profileYear">2026–2027</span>
             </p>
 
         </div>
@@ -2029,6 +2058,20 @@ applyLanguage();
     font-size: 14px;
 }
 
+.auth-profile-fields {
+    border-top: 1px solid #e2e8f0;
+    margin-top: 18px;
+    padding-top: 8px;
+}
+.auth-profile-fields h3 { color: #172554; margin-bottom: 6px; }
+.auth-card .auth-profile-fields input,
+.auth-card .auth-profile-fields select { margin-bottom: 7px; }
+.profile-form { display: grid; grid-template-columns: 1fr; gap: 8px; max-width: 520px; }
+.profile-form label { font-weight: bold; margin-top: 5px; }
+.profile-form input, .profile-form select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 9px; background: white; }
+#saveProfileBtn { background: #2563eb; color: white; border: 0; padding: 12px 16px; border-radius: 9px; cursor: pointer; font-weight: bold; }
+#profileMessage { overflow-wrap: anywhere; }
+
 #logoutBtn {
     padding: 10px 12px;
     border: 0;
@@ -2050,7 +2093,6 @@ applyLanguage();
         <p>Электронный дневник студента</p>
         <p>Войдите в аккаунт или создайте новый.</p>
 
-```
     <form id="authForm">
         <label for="authEmail">Электронная почта</label>
         <input
@@ -2069,13 +2111,38 @@ applyLanguage();
             autocomplete="current-password"
             required>
 
+        <div class="auth-profile-fields">
+            <h3>Данные студента для регистрации</h3>
+            <p>Заполняйте эти поля при создании нового аккаунта. При обычном входе их можно не заполнять.</p>
+            <label for="regFullName">ФИО</label>
+            <input id="regFullName" type="text" maxlength="120" placeholder="Иванов Иван Иванович" autocomplete="name">
+
+            <label for="regGroup">Группа</label>
+            <input id="regGroup" type="text" maxlength="50" placeholder="Например: 41 ПО">
+
+            <label for="regSpecialty">Специальность</label>
+            <input id="regSpecialty" type="text" maxlength="120" placeholder="Программное обеспечение">
+
+            <label for="regCourse">Курс</label>
+            <select id="regCourse">
+                <option value="">Выберите курс</option>
+                <option value="1">1 курс</option>
+                <option value="2">2 курс</option>
+                <option value="3">3 курс</option>
+                <option value="4">4 курс</option>
+                <option value="5">5 курс</option>
+            </select>
+
+            <label for="regYear">Учебный год</label>
+            <input id="regYear" type="text" maxlength="20" placeholder="2026–2027">
+        </div>
+
         <button id="loginBtn" type="submit">Войти</button>
         <button id="signupBtn" type="button">Создать аккаунт</button>
     </form>
 
     <p id="authMessage" role="status"></p>
 </div>
-```
 
 </div>
 
@@ -2097,6 +2164,37 @@ applyLanguage();
     const message = document.getElementById('authMessage');
     const loginBtn = document.getElementById('loginBtn');
     const signupBtn = document.getElementById('signupBtn');
+    const profileForm = document.getElementById('profileForm');
+    const profileMessage = document.getElementById('profileMessage');
+
+    const profileFields = {
+        fullName: document.getElementById('editFullName'),
+        group: document.getElementById('editGroup'),
+        specialty: document.getElementById('editSpecialty'),
+        course: document.getElementById('editCourse'),
+        year: document.getElementById('editYear')
+    };
+
+    function setProfileDisplay(profile = {}) {
+        const fullName = profile.full_name || 'Не указано';
+        const group = profile.group || 'Не указана';
+        const specialty = profile.specialty || 'Не указана';
+        const course = profile.course ? String(profile.course) : 'Не указан';
+        const year = profile.academic_year || '2026–2027';
+
+        document.getElementById('profileFullName').textContent = fullName;
+        document.getElementById('headerFullName').textContent = fullName;
+        document.getElementById('profileGroup').textContent = group;
+        document.getElementById('profileSpecialty').textContent = specialty;
+        document.getElementById('profileCourse').textContent = course;
+        document.getElementById('profileYear').textContent = year;
+
+        profileFields.fullName.value = profile.full_name || '';
+        profileFields.group.value = profile.group || '';
+        profileFields.specialty.value = profile.specialty || '';
+        profileFields.course.value = profile.course ? String(profile.course) : '';
+        profileFields.year.value = profile.academic_year || '2026–2027';
+    }
 
     if (!window.supabase) {
         message.textContent =
@@ -2164,6 +2262,7 @@ applyLanguage();
     async function updateScreen(session) {
         if (session && session.user) {
             window.vatkCurrentUserId = session.user.id;
+            setProfileDisplay(session.user.user_metadata || {});
             authScreen.style.display = 'none';
             app.classList.add('logged-in');
 
@@ -2236,10 +2335,21 @@ applyLanguage();
         const email = emailInput.value.trim();
         const password = passwordInput.value;
 
+        const fullName = document.getElementById('regFullName').value.trim();
+        const group = document.getElementById('regGroup').value.trim();
+        const specialty = document.getElementById('regSpecialty').value.trim();
+        const course = document.getElementById('regCourse').value;
+        const year = document.getElementById('regYear').value.trim();
+
         if (!email || !password || password.length < 6) {
             showMessage(
                 'Введите электронную почту и пароль длиной не менее 6 символов.'
             );
+            return;
+        }
+
+        if (!fullName || !group || !specialty || !course || !year) {
+            showMessage('Для регистрации заполните ФИО, группу, специальность, курс и учебный год.');
             return;
         }
 
@@ -2252,7 +2362,14 @@ applyLanguage();
             password,
             options: {
                 emailRedirectTo:
-                    'https://maikljordan2495-glitch.github.io/vatk-student-diary/'
+                    'https://maikljordan2495-glitch.github.io/vatk-student-diary/',
+                data: {
+                    full_name: fullName,
+                    group: group,
+                    specialty: specialty,
+                    course: course,
+                    academic_year: year
+                }
             }
         });
 
@@ -2273,6 +2390,48 @@ applyLanguage();
             'Аккаунт создан! Проверьте почту и подтвердите регистрацию, ' +
             'если Supabase запросил подтверждение. Затем войдите.'
         );
+    });
+
+    profileForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!window.vatkCurrentUserId) {
+            profileMessage.textContent = 'Сначала войдите в аккаунт.';
+            return;
+        }
+
+        const fullName = profileFields.fullName.value.trim();
+        const group = profileFields.group.value.trim();
+        const specialty = profileFields.specialty.value.trim();
+        const course = profileFields.course.value;
+        const year = profileFields.year.value.trim();
+
+        if (!fullName || !group || !specialty || !course || !year) {
+            profileMessage.textContent = 'Заполните все поля профиля.';
+            return;
+        }
+
+        const saveBtn = document.getElementById('saveProfileBtn');
+        saveBtn.disabled = true;
+        profileMessage.textContent = 'Сохраняем данные...';
+
+        const { data, error } = await client.auth.updateUser({
+            data: {
+                full_name: fullName,
+                group,
+                specialty,
+                course,
+                academic_year: year
+            }
+        });
+
+        saveBtn.disabled = false;
+        if (error) {
+            profileMessage.textContent = 'Не удалось сохранить: ' + error.message;
+            return;
+        }
+
+        setProfileDisplay(data.user.user_metadata || {});
+        profileMessage.textContent = 'Данные профиля сохранены!';
     });
 
     client.auth.onAuthStateChange((_event, session) => {
