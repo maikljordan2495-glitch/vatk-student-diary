@@ -1018,6 +1018,42 @@ footer{
 
     </div>
 
+    <div class="panel" style="margin-top:20px;">
+        <h2 style="margin-top:0;">Мои данные</h2>
+        <p>Заполни или измени свои личные данные. Они сохраняются в твоём аккаунте.</p>
+
+        <form id="profileForm" class="profile-form">
+            <label for="editFullName">ФИО</label>
+            <input id="editFullName" type="text" maxlength="120"
+                   placeholder="Например: Иванов Иван Иванович" required>
+
+            <label for="editGroup">Группа</label>
+            <input id="editGroup" type="text" maxlength="50"
+                   placeholder="Например: 41 ПО" required>
+
+            <label for="editSpecialty">Специальность</label>
+            <input id="editSpecialty" type="text" maxlength="120"
+                   placeholder="Например: Программное обеспечение" required>
+
+            <label for="editCourse">Курс</label>
+            <select id="editCourse" required>
+                <option value="">Выберите курс</option>
+                <option value="1">1 курс</option>
+                <option value="2">2 курс</option>
+                <option value="3">3 курс</option>
+                <option value="4">4 курс</option>
+                <option value="5">5 курс</option>
+            </select>
+
+            <label for="editYear">Учебный год</label>
+            <input id="editYear" type="text" maxlength="20"
+                   placeholder="Например: 2026–2027" required>
+
+            <button type="submit" id="saveProfileBtn">Сохранить данные</button>
+            <p id="profileMessage" role="status"></p>
+        </form>
+    </div>
+
 </section>
 
 
