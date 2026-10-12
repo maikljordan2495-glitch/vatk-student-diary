@@ -1369,32 +1369,38 @@ function esc(value){
 }
 
 
-function showPage(id,btn){
+```javascript
+function showPage(id, btn) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
 
-    document
-        .querySelectorAll('.page')
-        .forEach(x =>
-            x.classList.remove('active')
-        );
+    const selectedPage = document.getElementById(id);
 
-    document
-        .getElementById(id)
-        .classList.add('active');
+    if (!selectedPage) {
+        console.error('Страница не найдена:', id);
+        return;
+    }
 
+    selectedPage.classList.add('active');
 
-    document
-        .querySelectorAll('.nav button')
-        .forEach(x =>
-            x.classList.remove('active')
-        );
+    document.querySelectorAll('.nav button').forEach(button => {
+        button.classList.remove('active');
+    });
 
-
-    btn.classList.add('active');
+    if (btn) {
+        btn.classList.add('active');
+    }
 
     updateTitle(id);
 
+    if (id === 'profile' && typeof setProfileDisplay === 'function') {
+        if (window.vatkCurrentUser) {
+            setProfileDisplay(window.vatkCurrentUser.user_metadata || {});
+        }
+    }
 }
-
+```
 
 function updateTitle(id){
 
