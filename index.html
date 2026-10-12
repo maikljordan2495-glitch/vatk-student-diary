@@ -1671,78 +1671,74 @@ function renderGrades(){
 }
 
 
-function addGrade(){
+async function addGrade(){
 
-    const s =
-        document.getElementById('subject')
-            .value
-            .trim();
-
-
-    const d =
-        document.getElementById('date')
-            .value;
-
-
-    const m =
-        document.getElementById('mark')
-            .value;
-
+    const s = document.getElementById('subject').value.trim();
+    const d = document.getElementById('date').value;
+    const m = document.getElementById('mark').value;
 
     if(!s || !d){
-
-        alert(
-            translations[currentLang]
-                .fillSubjectDate
-        );
-
-        return;
-
-    }
-
-
-    grades.push({
-
-        s:s,
-        d:d,
-        m:m
-
-    });
-
-
-    document.getElementById('subject')
-        .value='';
-
-
-    document.getElementById('date')
-        .value='';
-
-
-    document.getElementById('mark')
-        .value='5';
-
-
-    renderGrades();
-
-}
-
-
-function delGrade(i){
-
-    if(
-        i < 0 ||
-        i >= grades.length
-    ){
+        alert(translations[currentLang].fillSubjectDate);
         return;
     }
 
+    const client = window.vatkSupabaseClient;
+    const userId = window.vatkCurrentUserId;
 
-    grades.splice(i,1);
+    if(!client || !userId){
+        alert('Сначала войдите в аккаунт.');
+        return;
+    }
+
+    const { data, error } = await client
+        .from('student_grades')
+        .insert({
+            user_id: userId,
+            subject: s,
+            grade_date: d,
+            mark: Number(m)
+        })
+        .select()
+        .single();
+
+    if(error){
+        alert('Не удалось сохранить оценку: ' + error.message);
+        return;
+    }
+
+    grades.push({ id: data.id, s: data.subject, d: data.grade_date, m: String(data.mark) });
+
+    document.getElementById('subject').value = '';
+    document.getElementById('date').value = '';
+    document.getElementById('mark').value = '5';
 
     renderGrades();
-
 }
 
+async function delGrade(i){
+    if(i < 0 || i >= grades.length) return;
+
+    const item = grades[i];
+    const client = window.vatkSupabaseClient;
+
+    if(!item.id || !client){
+        alert('Не удалось определить оценку в базе данных. Обновите страницу.');
+        return;
+    }
+
+    const { error } = await client
+        .from('student_grades')
+        .delete()
+        .eq('id', item.id);
+
+    if(error){
+        alert('Не удалось удалить оценку: ' + error.message);
+        return;
+    }
+
+    grades.splice(i, 1);
+    renderGrades();
+}
 
 function getTaskSubjectKey(value){
 
@@ -1856,87 +1852,97 @@ function renderTasks(){
 }
 
 
-function addTask(){
+async function addTask(){
 
-    const t =
-        document.getElementById('taskInput')
-            .value
-            .trim();
-
-
-    const option =
-        document.getElementById('taskSubject')
-            .selectedOptions[0];
-
-
-    const s =
-        option
-            ? option.value
-            : '';
-
+    const t = document.getElementById('taskInput').value.trim();
+    const option = document.getElementById('taskSubject').selectedOptions[0];
+    const s = option ? option.value : '';
 
     if(!t){
-
-        alert(
-            translations[currentLang]
-                .enterTask
-        );
-
-        return;
-
-    }
-
-
-    tasks.push({
-
-        t:t,
-        s:s,
-        done:false
-
-    });
-
-
-    document.getElementById('taskInput')
-        .value='';
-
-
-    renderTasks();
-
-}
-
-
-function toggleTask(i){
-
-    if(!tasks[i]){
+        alert(translations[currentLang].enterTask);
         return;
     }
 
+    const client = window.vatkSupabaseClient;
+    const userId = window.vatkCurrentUserId;
 
-    tasks[i].done =
-        !tasks[i].done;
-
-
-    renderTasks();
-
-}
-
-
-function delTask(i){
-
-    if(
-        i < 0 ||
-        i >= tasks.length
-    ){
+    if(!client || !userId){
+        alert('Сначала войдите в аккаунт.');
         return;
     }
 
+    const { data, error } = await client
+        .from('student_tasks')
+        .insert({
+            user_id: userId,
+            task_text: t,
+            subject: s,
+            done: false
+        })
+        .select()
+        .single();
 
-    tasks.splice(i,1);
+    if(error){
+        alert('Не удалось сохранить задание: ' + error.message);
+        return;
+    }
 
+    tasks.push({ id: data.id, t: data.task_text, s: data.subject, done: data.done });
+    document.getElementById('taskInput').value = '';
     renderTasks();
-
 }
 
+async function toggleTask(i){
+    if(!tasks[i]) return;
+
+    const client = window.vatkSupabaseClient;
+    const item = tasks[i];
+
+    if(!client || !item.id){
+        alert('Не удалось определить задание в базе данных. Обновите страницу.');
+        return;
+    }
+
+    const nextDone = !item.done;
+    const { error } = await client
+        .from('student_tasks')
+        .update({ done: nextDone })
+        .eq('id', item.id);
+
+    if(error){
+        alert('Не удалось обновить задание: ' + error.message);
+        renderTasks();
+        return;
+    }
+
+    item.done = nextDone;
+    renderTasks();
+}
+
+async function delTask(i){
+    if(i < 0 || i >= tasks.length) return;
+
+    const item = tasks[i];
+    const client = window.vatkSupabaseClient;
+
+    if(!client || !item.id){
+        alert('Не удалось определить задание в базе данных. Обновите страницу.');
+        return;
+    }
+
+    const { error } = await client
+        .from('student_tasks')
+        .delete()
+        .eq('id', item.id);
+
+    if(error){
+        alert('Не удалось удалить задание: ' + error.message);
+        return;
+    }
+
+    tasks.splice(i, 1);
+    renderTasks();
+}
 
 document.getElementById('lang').value =
     currentLang;
@@ -2109,12 +2115,55 @@ applyLanguage();
         SUPABASE_KEY
     );
 
+    // Доступ к клиенту нужен функциям оценок и заданий.
+    window.vatkSupabaseClient = client;
+    window.vatkCurrentUserId = null;
+
+    async function loadStudentData(userId) {
+        const [gradesResult, tasksResult] = await Promise.all([
+            client.from('student_grades')
+                .select('id, subject, grade_date, mark')
+                .eq('user_id', userId)
+                .order('grade_date', { ascending: false }),
+            client.from('student_tasks')
+                .select('id, task_text, subject, done')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: true })
+        ]);
+
+        if (gradesResult.error || tasksResult.error) {
+            const error = gradesResult.error || tasksResult.error;
+            showMessage('Ошибка загрузки дневника: ' + error.message);
+            return false;
+        }
+
+        // У каждого аккаунта свои записи. Новый аккаунт начнёт с пустых списков.
+        grades = (gradesResult.data || []).map(row => ({
+            id: row.id,
+            s: row.subject,
+            d: row.grade_date,
+            m: String(row.mark)
+        }));
+
+        tasks = (tasksResult.data || []).map(row => ({
+            id: row.id,
+            t: row.task_text,
+            s: row.subject,
+            done: row.done
+        }));
+
+        renderGrades();
+        renderTasks();
+        return true;
+    }
+
     function showMessage(text) {
         message.textContent = text;
     }
 
-    function updateScreen(session) {
+    async function updateScreen(session) {
         if (session && session.user) {
+            window.vatkCurrentUserId = session.user.id;
             authScreen.style.display = 'none';
             app.classList.add('logged-in');
 
@@ -2126,8 +2175,7 @@ applyLanguage();
                 logoutBtn.type = 'button';
                 logoutBtn.textContent = 'Выйти';
 
-                document.querySelector('.top-right')
-                    .appendChild(logoutBtn);
+                document.querySelector('.top-right').appendChild(logoutBtn);
 
                 logoutBtn.addEventListener('click', async () => {
                     logoutBtn.disabled = true;
@@ -2139,9 +2187,18 @@ applyLanguage();
                     }
                 });
             }
+
+            await loadStudentData(session.user.id);
         } else {
+            window.vatkCurrentUserId = null;
             app.classList.remove('logged-in');
             authScreen.style.display = 'flex';
+
+            // Не оставляем данные предыдущего аккаунта на экране после выхода.
+            grades = [];
+            tasks = [];
+            renderGrades();
+            renderTasks();
 
             const logoutBtn = document.getElementById('logoutBtn');
             if (logoutBtn) logoutBtn.remove();
@@ -2172,7 +2229,7 @@ applyLanguage();
             return;
         }
 
-        updateScreen(data.session);
+        await updateScreen(data.session);
     });
 
     signupBtn.addEventListener('click', async () => {
@@ -2208,7 +2265,7 @@ applyLanguage();
         }
 
         if (data.session) {
-            updateScreen(data.session);
+            await updateScreen(data.session);
             return;
         }
 
@@ -2219,17 +2276,18 @@ applyLanguage();
     });
 
     client.auth.onAuthStateChange((_event, session) => {
+        // Supabase может вызывать событие несколько раз; загружаем записи для текущего аккаунта.
         updateScreen(session);
     });
 
-    client.auth.getSession().then(({ data, error }) => {
+    client.auth.getSession().then(async ({ data, error }) => {
         if (error) {
             showMessage('Не удалось проверить вход: ' + error.message);
-            updateScreen(null);
+            await updateScreen(null);
             return;
         }
 
-        updateScreen(data.session);
+        await updateScreen(data.session);
     });
 })();
 </script>
