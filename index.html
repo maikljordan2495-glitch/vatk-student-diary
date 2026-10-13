@@ -2183,6 +2183,20 @@ applyLanguage();
     const loginBtn = document.getElementById('loginBtn');
     const signupBtn = document.getElementById('signupBtn');
     const teacherModeBtn = document.getElementById('teacherModeBtn');
+    let teacherLoginRequested = false;
+
+teacherModeBtn.addEventListener('click', () => {
+    teacherLoginRequested = true;
+
+    document.getElementById('auth-profile-fields').style.display = 'none';
+    loginBtn.textContent = 'Войти как преподаватель';
+    signupBtn.disabled = true;
+
+    showMessage(
+        'Введите почту и пароль аккаунта преподавателя, ' +
+        'затем нажмите «Войти как преподаватель».'
+    );
+});
 
     const profileForm = document.getElementById('profileForm');
     const profileMessage = document.getElementById('profileMessage');
