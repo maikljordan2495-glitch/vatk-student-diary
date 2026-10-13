@@ -2183,11 +2183,6 @@ applyLanguage();
     const loginBtn = document.getElementById('loginBtn');
     const signupBtn = document.getElementById('signupBtn');
     const teacherModeBtn = document.getElementById('teacherModeBtn');
-document.getElementById('teacherLogoutBtn').addEventListener('click', async () => {
-    await client.auth.signOut();
-    document.getElementById('teacherPanel').style.display = 'none';
-    document.getElementById('authScreen').style.display = 'block';
-});
 
     let teacherLoginRequested = false;
 
