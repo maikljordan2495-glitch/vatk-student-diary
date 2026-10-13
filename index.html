@@ -2294,9 +2294,6 @@ teacherModeBtn.addEventListener('click', () => {
         message.textContent = text;
     }
 
-    async function updateScreen(session) {  
-if (session && session.user) {
-    const { data: teacher, error: teacherError } = await client
         .from('teacher_access')
         .select('user_id, full_name, status')
         .eq('user_id', session.user.id)
