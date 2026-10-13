@@ -2290,13 +2290,106 @@ teacherModeBtn.addEventListener('click', () => {
         return true;
     }
 
-    function showMessage(text) {
-        message.textContent = text;
+function showMessage(text) {
+    message.textContent = text;
+}
+
+async function updateScreen(session) {
+    const teacherPanel = document.getElementById('teacherPanel');
+
+    if (session && session.user) {
+        const { data: teacher, error: teacherError } = await client
+            .from('teacher_access')
+            .select('user_id, full_name, status')
+            .eq('user_id', session.user.id)
+            .eq('status', 'approved')
+            .maybeSingle();
+
+        if (teacherError) {
+            console.error('Ошибка проверки преподавателя:', teacherError);
+            showMessage('Не удалось проверить доступ: ' + teacherError.message);
+            return;
+        }
+
+        if (teacher) {
+            window.vatkCurrentUserId = null;
+            window.vatkCurrentUser = null;
+
+            app.classList.remove('logged-in');
+            authScreen.style.display = 'none';
+
+            if (teacherPanel) {
+                teacherPanel.style.display = 'block';
+            }
+
+            document.getElementById('teacherWelcome').textContent =
+                'Здравствуйте, ' + (teacher.full_name || 'преподаватель') + '!';
+
+            document.getElementById('teacherStatus').textContent =
+                'Доступ подтверждён. Кабинет преподавателя открыт.';
+
+            return;
+        }
+
+        if (teacherPanel) {
+            teacherPanel.style.display = 'none';
+        }
+
+        window.vatkCurrentUserId = session.user.id;
+        window.vatkCurrentUser = session.user;
+
+        setProfileDisplay(session.user.user_metadata || {});
+
+        authScreen.style.display = 'none';
+        app.classList.add('logged-in');
+
+        let logoutBtn = document.getElementById('logoutBtn');
+
+        if (!logoutBtn) {
+            logoutBtn = document.createElement('button');
+            logoutBtn.id = 'logoutBtn';
+            logoutBtn.type = 'button';
+            logoutBtn.textContent = 'Выйти';
+
+            document.querySelector('.top-right').appendChild(logoutBtn);
+
+            logoutBtn.addEventListener('click', async () => {
+                const { error } = await client.auth.signOut();
+
+                if (error) {
+                    alert('Не удалось выйти: ' + error.message);
+                }
+            });
+        }
+
+        await loadStudentData(session.user.id);
+    } else {
+        window.vatkCurrentUserId = null;
+        window.vatkCurrentUser = null;
+
+        app.classList.remove('logged-in');
+        authScreen.style.display = 'flex';
+
+        if (teacherPanel) {
+            teacherPanel.style.display = 'none';
+        }
+
+        grades = [];
+        tasks = [];
+
+        renderGrades();
+        renderTasks();
+
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if (logoutBtn) {
+            logoutBtn.remove();
+        }
     }
+}
 
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
         const email = emailInput.value.trim();
         const password = passwordInput.value;
 
