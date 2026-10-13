@@ -2314,6 +2314,24 @@ if (session && session.user) {
             'Не удалось проверить доступ. Попробуйте обновить страницу.';
         return;
     }
+    if (teacher) {
+        document.getElementById('authScreen').style.display = 'none';
+        document.querySelector('.app').classList.remove('logged-in');
+
+        const panel = document.getElementById('teacherPanel');
+        panel.style.display = 'block';
+
+        document.getElementById('teacherWelcome').textContent =
+            'Здравствуйте, ' + (teacher.full_name || 'преподаватель') + '!';
+
+        document.getElementById('teacherStatus').textContent =
+            'Доступ подтверждён. Кабинет преподавателя открыт.';
+
+        return;
+    }
+
+    document.getElementById('teacherPanel').style.display = 'none';
+}
 
     if (teacher) {
         document.getElementById('authScreen').style.display = 'none';
